@@ -8,6 +8,57 @@ const DEVELOPER_NAME = 'Abhishek';
 const DEVELOPER_EMAIL = 'abhishekmiyan34@gmail.com';
 const DEVELOPER_LOCATION = 'Dehradun - Rishikesh, Uttarakhand, India';
 
+const caseStudies = [
+  {
+    title: 'Local Restaurant',
+    category: 'Food and Beverage',
+    problem: 'No online presence, missing online orders',
+    result: '150% increase in online inquiries',
+    image: '/restaurant.jpg',
+    emoji: '🍽️',
+  },
+  {
+    title: 'Fitness Gym',
+    category: 'Health and Fitness',
+    problem: 'Outdated website, low membership inquiries',
+    result: '80+ qualified leads in 2 months',
+    image: '/gym.jpg',
+    emoji: '💪',
+  },
+  {
+    title: 'Real Estate Agent',
+    category: 'Real Estate',
+    problem: 'No professional property showcase',
+    result: '3x more property inquiries',
+    image: '/realestate.jpg',
+    emoji: '🏠',
+  },
+  {
+    title: 'Coaching Business',
+    category: 'Education',
+    problem: 'No online booking system',
+    result: '250% increase in consultations',
+    image: '/coaching.jpg',
+    emoji: '📚',
+  },
+  {
+    title: 'Medical Clinic',
+    category: 'Healthcare',
+    problem: 'Manual appointment system',
+    result: '60% reduction in phone calls',
+    image: '/medical.jpg',
+    emoji: '🏥',
+  },
+  {
+    title: 'Online Store',
+    category: 'Retail and Shopping',
+    problem: 'No online sales channel',
+    result: '$5000+ revenue in first month',
+    image: '/ecommerce.jpg',
+    emoji: '🛍️',
+  },
+];
+
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,6 +71,7 @@ export default function Home() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,15 +104,12 @@ export default function Home() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.business || !formData.phone || !formData.country || !formData.email || !formData.requirements) {
       setSubmitMessage('Please fill all fields');
       return;
@@ -72,19 +121,15 @@ export default function Home() {
     try {
       const emailResponse = await fetch('/api/send-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      if (!emailResponse.ok) {
-        throw new Error('Failed to send email');
-      }
+      if (!emailResponse.ok) throw new Error('Failed');
 
       const whatsappMessage = `Hi Abhishek,
 
-I'm interested in your services. Here are my details:
+I am interested in your services. Here are my details:
 
 *Name:* ${formData.name}
 *Business:* ${formData.business}
@@ -98,36 +143,30 @@ ${formData.requirements}
 Looking forward to hearing from you!`;
 
       window.open(whatsappLink(whatsappMessage), '_blank');
+      setSubmitMessage('Your message sent! Opening WhatsApp...');
 
-      setSubmitMessage('✅ Email sent! Opening WhatsApp...');
-      
       setTimeout(() => {
-        setFormData({
-          name: '',
-          business: '',
-          phone: '',
-          email: '',
-          country: '',
-          requirements: '',
-        });
+        setFormData({ name: '', business: '', phone: '', email: '', country: '', requirements: '' });
         setSubmitMessage('');
       }, 2000);
     } catch (error) {
-      setSubmitMessage('❌ Error sending email. Please try WhatsApp directly.');
-      console.error('Error:', error);
+      setSubmitMessage('Error! Please contact me directly on WhatsApp.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleImageError = (index: number) => {
+    setImgErrors(prev => ({ ...prev, [index]: true }));
+  };
+
   return (
     <main className="bg-dark-900 overflow-hidden">
+
       {/* Navbar */}
       <motion.nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-dark-900/95 backdrop-blur-md border-b border-dark-700'
-            : 'bg-transparent'
+          isScrolled ? 'bg-dark-900/95 backdrop-blur-md border-b border-dark-700' : 'bg-transparent'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -156,7 +195,7 @@ Looking forward to hearing from you!`;
               href={whatsappLink('Hi, I need a website for my business')}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-glow"
+              className="px-6 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-medium transition-all duration-300"
             >
               Get Started
             </a>
@@ -179,29 +218,24 @@ Looking forward to hearing from you!`;
             animate="visible"
           >
             <motion.div className="space-y-8" variants={itemVariants}>
-              <div className="space-y-4">
-                <motion.h1
-                  className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight"
-                  variants={itemVariants}
-                >
-                  Websites & Apps That
-                  <span className="bg-gradient-to-r from-accent-400 to-accent-500 bg-clip-text text-transparent"> Drive Growth</span>
-                </motion.h1>
+              <motion.h1
+                className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight"
+                variants={itemVariants}
+              >
+                Websites and Apps That
+                <span className="bg-gradient-to-r from-accent-400 to-accent-500 bg-clip-text text-transparent"> Drive Growth</span>
+              </motion.h1>
 
-                <motion.p
-                  className="text-xl text-dark-300 leading-relaxed max-w-lg"
-                  variants={itemVariants}
-                >
-                  Professional web and app solutions for small businesses. Get more customers, increase sales, and build your online presence with modern, affordable technology.
-                </motion.p>
-              </div>
+              <motion.p className="text-xl text-dark-300 leading-relaxed max-w-lg" variants={itemVariants}>
+                Professional web and app solutions for small businesses. Get more customers, increase sales, and build your online presence with modern, affordable technology.
+              </motion.p>
 
               <motion.div className="flex flex-col sm:flex-row gap-4" variants={itemVariants}>
                 <a
                   href={whatsappLink('Hi Abhishek, I need a free consultation for my business')}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-glow text-center"
+                  className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-semibold transition-all duration-300 text-center"
                 >
                   Free Consultation
                 </a>
@@ -214,87 +248,62 @@ Looking forward to hearing from you!`;
               </motion.div>
 
               <motion.div className="grid grid-cols-3 gap-6 pt-8" variants={itemVariants}>
-                <div className="bg-dark-800/50 backdrop-blur border border-dark-700 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-accent-400">100%</div>
-                  <div className="text-sm text-dark-400">Client Satisfaction</div>
-                </div>
-                <div className="bg-dark-800/50 backdrop-blur border border-dark-700 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-accent-400">24/7</div>
-                  <div className="text-sm text-dark-400">Support</div>
-                </div>
-                <div className="bg-dark-800/50 backdrop-blur border border-dark-700 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-accent-400">2hrs</div>
-                  <div className="text-sm text-dark-400">Response Time</div>
-                </div>
+                {[
+                  { value: '100%', label: 'Client Satisfaction' },
+                  { value: '24/7', label: 'Support' },
+                  { value: '2hrs', label: 'Response Time' },
+                ].map((stat, i) => (
+                  <div key={i} className="bg-dark-800/50 backdrop-blur border border-dark-700 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-accent-400">{stat.value}</div>
+                    <div className="text-sm text-dark-400">{stat.label}</div>
+                  </div>
+                ))}
               </motion.div>
             </motion.div>
 
-            {/* Avatar Section */}
+            {/* Avatar */}
             <motion.div className="flex justify-center" variants={itemVariants}>
               <div className="relative w-full max-w-md">
                 <div className="absolute inset-0 bg-gradient-to-br from-accent-500/30 to-accent-600/30 rounded-3xl blur-3xl animate-pulse"></div>
                 <motion.div
                   className="relative bg-gradient-to-br from-dark-700 to-dark-800 rounded-3xl p-8 border-2 border-accent-500/50 overflow-hidden"
-                  whileHover={{ scale: 1.05, borderColor: '#0ea5e9' }}
+                  whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {/* Avatar with Professional Frame */}
                   <div className="relative w-full aspect-square flex items-center justify-center bg-gradient-to-br from-dark-600 to-dark-700 rounded-2xl overflow-hidden border-4 border-accent-500/30">
-                    {/* Animated Background Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-accent-500/10 via-transparent to-accent-600/10 animate-pulse"></div>
-                    
-                    {/* Avatar Image - YOUR PHOTO */}
                     <motion.img
                       src="/avatar.jpg"
                       alt="Abhishek"
                       className="w-full h-full object-cover relative z-10 rounded-2xl"
                       animate={{ y: [0, -8, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://api.dicebear.com/7.x/avataaars/svg?seed=abhishek&scale=90&backgroundColor=gradient";
+                        (e.target as HTMLImageElement).src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=abhishek';
                       }}
                     />
-
-                    {/* Floating Particles Effect */}
-                    <div className="absolute inset-0 z-20 pointer-events-none">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="absolute w-2 h-2 bg-accent-400 rounded-full"
-                          animate={{
-                            x: [0, Math.random() * 100 - 50],
-                            y: [0, Math.random() * 100 - 50],
-                            opacity: [0, 1, 0],
-                          }}
-                          transition={{
-                            duration: 3 + i,
-                            repeat: Infinity,
-                            delay: i * 0.5,
-                          }}
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Shine Effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-2xl z-30 pointer-events-none"></div>
                   </div>
 
-                  {/* Info Card */}
                   <div className="mt-6 text-center">
                     <h3 className="text-2xl font-bold text-white mb-1">{DEVELOPER_NAME}</h3>
-                    <p className="text-accent-400 font-semibold mb-2">Web & App Developer</p>
+                    <p className="text-accent-400 font-semibold mb-2">Web and App Developer</p>
                     <p className="text-dark-400 text-sm">{DEVELOPER_LOCATION}</p>
                     <div className="mt-4 flex justify-center gap-3">
-                      <a href={whatsappLink('Hi')} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center text-white transition-all">
+                      <a
+                        href={whatsappLink('Hi')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center text-white transition-all"
+                      >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.946 1.347l-.355.192-.368-.06c-1.286-.113-2.511-.505-3.522-1.102l-.503-.294-.588.122c-.461.095-.902.196-1.322.303 1.08 1.494 2.656 2.674 4.32 3.204l.442.139-.011.48c-.021.845.062 1.667.196 2.472.134.804.34 1.592.612 2.36l.213.659-.655.236c-2.035.731-3.99 1.8-5.676 3.15.738-1.477 1.338-2.886 1.788-4.303l.262-.888-.895-.344C2.033 10.442 1 8.814 1 6.977 1 3.129 4.134 0 8 0c3.866 0 7 3.129 7 7s-3.134 7-7 7z" />
                         </svg>
                       </a>
-                      <a href={`mailto:${DEVELOPER_EMAIL}`} className="w-10 h-10 bg-accent-500 hover:bg-accent-600 rounded-full flex items-center justify-center text-white transition-all">
+                      <a
+                        href={`mailto:${DEVELOPER_EMAIL}`}
+                        className="w-10 h-10 bg-accent-500 hover:bg-accent-600 rounded-full flex items-center justify-center text-white transition-all"
+                      >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                         </svg>
@@ -332,40 +341,16 @@ Looking forward to hearing from you!`;
             viewport={{ once: true, margin: '-100px' }}
           >
             {[
-              { 
-                title: 'Business Website', 
-                icon: '🏢', 
-                desc: 'Professional website to establish your online presence and attract customers 24/7.' 
-              },
-              { 
-                title: 'E-Commerce Store', 
-                icon: '🛍️', 
-                desc: 'Sell products online and reach customers beyond your physical location.' 
-              },
-              { 
-                title: 'Mobile App', 
-                icon: '📱', 
-                desc: 'Custom mobile app to engage customers and increase brand loyalty.' 
-              },
-              { 
-                title: 'Landing Page', 
-                icon: '🎯', 
-                desc: 'High-converting landing page designed to turn visitors into paying customers.' 
-              },
-              { 
-                title: 'Website Redesign', 
-                icon: '✨', 
-                desc: 'Modernize your existing website with fresh design and improved functionality.' 
-              },
-              { 
-                title: 'Maintenance & Support', 
-                icon: '🔧', 
-                desc: 'Keep your website running smoothly with ongoing support and updates.' 
-              },
+              { title: 'Business Website', icon: '🏢', desc: 'Professional website to establish your online presence and attract customers 24/7.' },
+              { title: 'Online Store', icon: '🛍️', desc: 'Sell products online and reach customers beyond your physical location.' },
+              { title: 'Mobile App', icon: '📱', desc: 'Custom mobile app to engage customers and increase brand loyalty.' },
+              { title: 'Landing Page', icon: '🎯', desc: 'High-converting landing page designed to turn visitors into paying customers.' },
+              { title: 'Website Redesign', icon: '✨', desc: 'Modernize your existing website with fresh design and improved functionality.' },
+              { title: 'Maintenance and Support', icon: '🔧', desc: 'Keep your website running smoothly with ongoing support and updates.' },
             ].map((service, i) => (
               <motion.div
                 key={i}
-                className="group relative bg-dark-800 border border-dark-700 rounded-2xl p-8 hover:border-accent-500/50 transition-all duration-300 hover:shadow-glow"
+                className="group relative bg-dark-800 border border-dark-700 rounded-2xl p-8 hover:border-accent-500/50 transition-all duration-300"
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
               >
@@ -410,13 +395,13 @@ Looking forward to hearing from you!`;
               { icon: '📱', title: 'Mobile First', desc: 'All websites optimized for mobile devices.' },
               { icon: '🎨', title: 'Modern Design', desc: 'Beautiful, professional designs that convert.' },
               { icon: '🔍', title: 'SEO Optimized', desc: 'Built to rank higher in search results.' },
-              { icon: '🚀', title: 'High Performance', desc: 'Fast loading websites for better UX.' },
+              { icon: '🚀', title: 'High Performance', desc: 'Fast loading websites for better experience.' },
               { icon: '💬', title: 'Direct Support', desc: 'Direct communication with me, no middlemen.' },
               { icon: '🤝', title: 'Long-term Support', desc: 'Ongoing support after your website launches.' },
             ].map((item, i) => (
               <motion.div
                 key={i}
-                className="bg-dark-700 border border-dark-600 rounded-xl p-6 hover:border-accent-500/50 transition-all duration-300 hover:shadow-glow"
+                className="bg-dark-700 border border-dark-600 rounded-xl p-6 hover:border-accent-500/50 transition-all duration-300"
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
               >
@@ -429,7 +414,7 @@ Looking forward to hearing from you!`;
         </div>
       </section>
 
-      {/* Case Studies Section */}
+      {/* Case Studies Section - FIXED */}
       <section id="portfolio" className="py-20 px-4 bg-dark-900">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -452,63 +437,31 @@ Looking forward to hearing from you!`;
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {[
-              {
-                title: 'Local Restaurant',
-                category: 'Food & Beverage',
-                problem: 'No online presence, missing online orders',
-                result: '150% increase in online inquiries',
-                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=300&fit=crop',
-              },
-              {
-                title: 'Fitness Gym',
-                category: 'Health & Fitness',
-                problem: 'Outdated website, low membership inquiries',
-                result: '80+ qualified leads in 2 months',
-                image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&h=300&fit=crop',
-              },
-              {
-                title: 'Real Estate Agent',
-                category: 'Real Estate',
-                problem: 'No professional property showcase',
-                result: '3x more property inquiries',
-                image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&h=300&fit=crop',
-              },
-              {
-                title: 'Coaching Business',
-                category: 'Education',
-                problem: 'No online booking system',
-                result: '250% increase in consultations',
-                image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-              },
-              {
-                title: 'Medical Clinic',
-                category: 'Healthcare',
-                problem: 'Manual appointment system',
-                result: '60% reduction in phone calls',
-                image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=300&fit=crop',
-              },
-              {
-                title: 'E-Commerce Store',
-                category: 'Retail',
-                problem: 'No online sales channel',
-                result: '$5000+ in first month',
-                image: 'https://images.unsplash.com/photo-1460925895917-adf4e565db18?w=500&h=300&fit=crop',
-              },
-            ].map((project, i) => (
+            {caseStudies.map((project, i) => (
               <motion.div
                 key={i}
-                className="group relative bg-dark-800 rounded-2xl overflow-hidden border border-dark-700 hover:border-accent-500/50 transition-all duration-300 hover:shadow-glow"
+                className="group relative bg-dark-800 rounded-2xl overflow-hidden border border-dark-700 hover:border-accent-500/50 transition-all duration-300"
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
               >
+                {/* Image with Fallback */}
                 <div className="relative h-48 overflow-hidden bg-dark-700">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
+                  {imgErrors[i] ? (
+                    // Fallback when image fails to load
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-dark-600 to-dark-700">
+                      <span className="text-6xl mb-2">{project.emoji}</span>
+                      <span className="text-dark-400 text-sm font-medium">{project.title}</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={() => handleImageError(i)}
+                    />
+                  )}
                 </div>
+
                 <div className="p-6">
                   <div className="text-sm text-accent-400 font-medium mb-2">{project.category}</div>
                   <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
@@ -553,7 +506,7 @@ Looking forward to hearing from you!`;
             {[
               {
                 name: 'Rajesh Kumar',
-                business: 'Kumar\'s Restaurant',
+                business: 'Kumars Restaurant',
                 text: 'The website transformed our business. We went from zero online orders to 50+ orders per week. Highly recommended!',
               },
               {
@@ -569,7 +522,7 @@ Looking forward to hearing from you!`;
             ].map((testimonial, i) => (
               <motion.div
                 key={i}
-                className="bg-dark-700 border border-dark-600 rounded-2xl p-8 hover:border-accent-500/50 transition-all duration-300 hover:shadow-glow"
+                className="bg-dark-700 border border-dark-600 rounded-2xl p-8 hover:border-accent-500/50 transition-all duration-300"
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
               >
@@ -616,26 +569,28 @@ Looking forward to hearing from you!`;
               {
                 name: 'Starter',
                 price: '$299',
-                features: ['5-7 Pages', 'Mobile Responsive', 'Contact Form', 'Basic SEO', 'Free Hosting (1 year)', 'Email Support'],
+                features: ['5-7 Pages', 'Mobile Responsive', 'Contact Form', 'Basic SEO', 'Free Hosting 1 year', 'Email Support'],
+                highlight: false,
               },
               {
                 name: 'Business',
                 price: '$599',
-                features: ['10-15 Pages', 'Mobile Responsive', 'Blog Section', 'Advanced SEO', 'Free Hosting (1 year)', 'Priority Support', 'Analytics Setup'],
+                features: ['10-15 Pages', 'Mobile Responsive', 'Blog Section', 'Advanced SEO', 'Free Hosting 1 year', 'Priority Support', 'Analytics Setup'],
                 highlight: true,
               },
               {
                 name: 'Premium',
                 price: '$999',
-                features: ['Unlimited Pages', 'E-commerce Ready', 'Blog & Portfolio', 'Advanced SEO', 'Free Hosting (1 year)', 'Custom Features', '24/7 Support'],
+                features: ['Unlimited Pages', 'Online Store Ready', 'Blog and Portfolio', 'Advanced SEO', 'Free Hosting 1 year', 'Custom Features', '24/7 Support'],
+                highlight: false,
               },
             ].map((plan, i) => (
               <motion.div
                 key={i}
                 className={`relative rounded-2xl p-8 transition-all duration-300 ${
                   plan.highlight
-                    ? 'bg-gradient-to-br from-accent-500/20 to-accent-600/10 border-2 border-accent-500 shadow-glow'
-                    : 'bg-dark-800 border border-dark-700 hover:border-accent-500/50 hover:shadow-glow'
+                    ? 'bg-gradient-to-br from-accent-500/20 to-accent-600/10 border-2 border-accent-500'
+                    : 'bg-dark-800 border border-dark-700 hover:border-accent-500/50'
                 }`}
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
@@ -658,7 +613,7 @@ Looking forward to hearing from you!`;
                   ))}
                 </ul>
                 <a
-                  href={whatsappLink(`Hi Abhishek, I'm interested in the ${plan.name} plan`)}
+                  href={whatsappLink(`Hi Abhishek, I am interested in the ${plan.name} plan`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`w-full py-3 rounded-lg font-semibold text-center block transition-all duration-300 ${
@@ -706,7 +661,7 @@ Looking forward to hearing from you!`;
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Let's Build Your Online Presence</h2>
             <p className="text-xl text-dark-400">
-              Fill out the form below and I'll contact you via email and WhatsApp within 2 hours.
+              Fill out the form below and I will contact you via email and WhatsApp within 2 hours.
             </p>
           </motion.div>
 
@@ -718,10 +673,9 @@ Looking forward to hearing from you!`;
             transition={{ duration: 0.6 }}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name and Business */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-white font-semibold mb-2">Your Name *</label>
+                  <label className="block text-white font-semibold mb-2">Your Name</label>
                   <input
                     type="text"
                     name="name"
@@ -733,7 +687,7 @@ Looking forward to hearing from you!`;
                   />
                 </div>
                 <div>
-                  <label className="block text-white font-semibold mb-2">Business Name *</label>
+                  <label className="block text-white font-semibold mb-2">Business Name</label>
                   <input
                     type="text"
                     name="business"
@@ -746,22 +700,21 @@ Looking forward to hearing from you!`;
                 </div>
               </div>
 
-              {/* Phone and Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-white font-semibold mb-2">Phone Number *</label>
+                  <label className="block text-white font-semibold mb-2">Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+1 555 123 4567"
                     className="w-full px-4 py-3 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-dark-400 focus:outline-none focus:border-accent-500 transition-colors"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-white font-semibold mb-2">Email Address *</label>
+                  <label className="block text-white font-semibold mb-2">Email Address</label>
                   <input
                     type="email"
                     name="email"
@@ -774,9 +727,8 @@ Looking forward to hearing from you!`;
                 </div>
               </div>
 
-              {/* Country Selection */}
               <div>
-                <label className="block text-white font-semibold mb-2">Country *</label>
+                <label className="block text-white font-semibold mb-2">Country</label>
                 <select
                   name="country"
                   value={formData.country}
@@ -805,9 +757,8 @@ Looking forward to hearing from you!`;
                 </select>
               </div>
 
-              {/* Requirements */}
               <div>
-                <label className="block text-white font-semibold mb-2">Project Requirements *</label>
+                <label className="block text-white font-semibold mb-2">Project Requirements</label>
                 <textarea
                   name="requirements"
                   value={formData.requirements}
@@ -819,28 +770,26 @@ Looking forward to hearing from you!`;
                 ></textarea>
               </div>
 
-              {/* Submit Message */}
               {submitMessage && (
                 <div className={`p-4 rounded-lg text-center font-semibold ${
-                  submitMessage.includes('✅') 
-                    ? 'bg-green-500/20 border border-green-500 text-green-400' 
+                  submitMessage.includes('sent')
+                    ? 'bg-green-500/20 border border-green-500 text-green-400'
                     : 'bg-red-500/20 border border-red-500 text-red-400'
                 }`}>
                   {submitMessage}
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-accent-500 hover:bg-accent-600 disabled:bg-dark-600 text-white font-bold rounded-lg transition-all duration-300 hover:shadow-glow"
+                className="w-full py-4 bg-accent-500 hover:bg-accent-600 disabled:bg-dark-600 text-white font-bold rounded-lg transition-all duration-300"
               >
-                {isSubmitting ? 'Sending...' : 'Send Details & Open WhatsApp'}
+                {isSubmitting ? 'Sending...' : 'Send Details and Open WhatsApp'}
               </button>
 
               <p className="text-center text-dark-400 text-sm">
-                Your details will be sent to my email and WhatsApp. I'll respond within 2 hours.
+                Your details will be sent to my email and WhatsApp. I will respond within 2 hours.
               </p>
             </form>
           </motion.div>
@@ -868,7 +817,7 @@ Looking forward to hearing from you!`;
                 href={whatsappLink('Hi Abhishek, I want to start my project')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-glow"
+                className="px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-lg font-semibold transition-all duration-300"
               >
                 Start Your Project
               </a>
@@ -894,7 +843,7 @@ Looking forward to hearing from you!`;
                 </div>
                 <span className="text-white font-bold">{DEVELOPER_NAME}</span>
               </div>
-              <p className="text-dark-400 text-sm">Web & App Developer helping small businesses grow online.</p>
+              <p className="text-dark-400 text-sm">Web and App Developer helping small businesses grow online.</p>
               <p className="text-dark-400 text-sm mt-2">{DEVELOPER_LOCATION}</p>
             </div>
             <div>
@@ -910,7 +859,7 @@ Looking forward to hearing from you!`;
               <h4 className="text-white font-bold mb-4">Services</h4>
               <ul className="space-y-2">
                 <li><a href="#services" className="text-dark-400 hover:text-accent-400 transition-colors text-sm">Business Website</a></li>
-                <li><a href="#services" className="text-dark-400 hover:text-accent-400 transition-colors text-sm">E-Commerce Store</a></li>
+                <li><a href="#services" className="text-dark-400 hover:text-accent-400 transition-colors text-sm">Online Store</a></li>
                 <li><a href="#services" className="text-dark-400 hover:text-accent-400 transition-colors text-sm">Mobile App</a></li>
                 <li><a href="#services" className="text-dark-400 hover:text-accent-400 transition-colors text-sm">Maintenance</a></li>
               </ul>
@@ -925,7 +874,7 @@ Looking forward to hearing from you!`;
             </div>
           </div>
           <div className="border-t border-dark-700 pt-8 text-center text-dark-400 text-sm">
-            <p>&copy; 2026 {DEVELOPER_NAME}. All rights reserved. | {DEVELOPER_LOCATION}</p>
+            <p>2026 {DEVELOPER_NAME}. All rights reserved. | {DEVELOPER_LOCATION}</p>
           </div>
         </div>
       </footer>
@@ -945,6 +894,7 @@ Looking forward to hearing from you!`;
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.946 1.347l-.355.192-.368-.06c-1.286-.113-2.511-.505-3.522-1.102l-.503-.294-.588.122c-.461.095-.902.196-1.322.303 1.08 1.494 2.656 2.674 4.32 3.204l.442.139-.011.48c-.021.845.062 1.667.196 2.472.134.804.34 1.592.612 2.36l.213.659-.655.236c-2.035.731-3.99 1.8-5.676 3.15.738-1.477 1.338-2.886 1.788-4.303l.262-.888-.895-.344C2.033 10.442 1 8.814 1 6.977 1 3.129 4.134 0 8 0c3.866 0 7 3.129 7 7s-3.134 7-7 7z" />
         </svg>
       </motion.a>
+
     </main>
   );
 }
