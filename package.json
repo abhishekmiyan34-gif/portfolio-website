@@ -19,16 +19,12 @@
     "autoprefixer": "^10.4.0",
     "framer-motion": "^10.16.0",
     "gsap": "^3.12.0",
-    "three": "^r128.0.0",
-    "react-three-fiber": "^8.13.0",
-    "zustand": "^4.4.0",
     "axios": "^1.6.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/node": "^20.0.0",
-    "@types/three": "^r128.0.0",
     "eslint": "^8.0.0",
     "eslint-config-next": "^14.0.0"
   }
